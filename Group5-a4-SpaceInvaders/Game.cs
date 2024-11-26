@@ -1,17 +1,17 @@
-﻿// Include code libraries you need below (use the namespace).
+﻿// include code libraries you need below (use the namespace).
 using System;
 using System.Numerics;
 using Game10003;
 
-// The namespace your code is in.
+// the namespace your code is in.
 namespace Game10003
 {
     /// <summary>
-    /// Your game code goes inside this class!
+    ///     Your game code goes inside this class!
     /// </summary>
     public class Game
     {
-        // texts for the different screens
+        // Place your variables here:
         private string titleText = "SPACE INVADERS\nPress Enter to Start";
         private string winText = "YOU WIN!\nPress Enter to Restart";
         private string loseText = "YOU LOSE!\nPress Enter to Restart";
@@ -27,73 +27,84 @@ namespace Game10003
         private bool isEnterPressed = false;
 
         /// <summary>
-        /// Setup runs once before the game loop begins.
+        ///     Setup runs once before the game loop begins.
+        ///     This is where you set up your game environment, window properties, etc.
         /// </summary>
         public void Setup()
         {
-            // set up window size
+            // set up window size and title
             Window.SetTitle("Space Invaders");
             Window.SetSize(800, 600);  // set window size to 800x600
 
             // initialize Text for drawing
             Text.Initialize();
+            Text.Color = textColor;  // set initial text color
 
-            // ensure that title screen is displayed immediately
-            isInTitleScreen = true;  // set to true to show title screen initially
-            isInWinScreen = false;   // make sure not in win screen initially
-            isInLoseScreen = false;  // make sure not in lose screen initially
+            // clear the background initially
+            Window.ClearBackground(Color.Black);
+
+            // draw the initial title screen
+            DrawCurrentScreen();
         }
 
         /// <summary>
-        /// Update runs every frame.
+        ///     Update runs every frame.
+        ///     This is where the game logic, input handling, and drawing take place.
         /// </summary>
         public void Update()
         {
+            // clear the background before drawing anything
+            Window.ClearBackground(Color.Black);
+
             // handle input to switch screens when Enter is pressed
-            if (Input.IsKeyboardKeyPressed(KeyboardInput.Enter))  // check for key press (not hold)
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Enter) && !isEnterPressed)
             {
                 if (isInTitleScreen)
                 {
-                    // change to win screen for now (you can switch this to Lose later)
                     isInTitleScreen = false;
-                    isInWinScreen = true;  // for testing, switch to win screen
+                    isInWinScreen = true;
                 }
                 else if (isInWinScreen || isInLoseScreen)
                 {
-                    // after win or lose, return to the title screen
                     isInWinScreen = false;
                     isInLoseScreen = false;
-                    isInTitleScreen = true;  // return to title screen
+                    isInTitleScreen = true;
                 }
-
-                // ensure that we only change the state once per key press
                 isEnterPressed = true;
             }
 
-            // prevent state change if Enter key is held down
+            // reset Enter key state when released
             if (Input.IsKeyboardKeyReleased(KeyboardInput.Enter))
             {
-                isEnterPressed = false;  // allow the Enter key to be processed again
+                isEnterPressed = false;
             }
 
-            // clear the background before drawing anything
-            Window.ClearBackground(Color.Black);  // reset background to black each frame
+            // draw the current screen (title, win, or lose screen)
+            DrawCurrentScreen();
+        }
 
-            // render the appropriate screen based on the current flags
-            if (isInTitleScreen)  // title screen
+        /// <summary>
+        ///     Helper method to draw the current screen.
+        ///     This method will draw either the title, win, or lose screen based on the game state.
+        /// </summary>
+        private void DrawCurrentScreen()
+        {
+            if (isInTitleScreen)
             {
-                Text.Draw(titleText, 100, 250);  // draw title text at position (100, 250)
+                Text.Color = Color.White;  // reset to white for title
+                Text.Draw(titleText, 100, 250);
             }
-            else if (isInWinScreen)  // win screen
+            else if (isInWinScreen)
             {
-                Text.Color = Color.Green;  // set color to green for win
-                Text.Draw(winText, 100, 250);  // draw win text at position (100, 250)
+                Text.Color = Color.Green;
+                Text.Draw(winText, 100, 250);
             }
-            else if (isInLoseScreen)  // lose screen
+            else if (isInLoseScreen)
             {
-                Text.Color = Color.Red;  // set color to red for lose
-                Text.Draw(loseText, 100, 250);  // draw lose text at position (100, 250)
+                Text.Color = Color.Red;
+                Text.Draw(loseText, 100, 250);
             }
         }
     }
 }
+
